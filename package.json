@@ -1,0 +1,23 @@
+{
+  "name": "mongowebscraper",
+  "version": "1.0.0",
+  "description": "utility to scrape website and store them in a mongodb",
+  "main": "node scraper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jcruey/Mongo-Web-Scraper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jcruey/Mongo-Web-Scraper/issues"
+  },
+  "homepage": "https://github.com/jcruey/Mongo-Web-Scraper#readme",
+  "dependencies": {
+    "cheerio": "^0.20.0",
+    "request": "^2.74.0"
+  }
+}
