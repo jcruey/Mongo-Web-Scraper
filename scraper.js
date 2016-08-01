@@ -42,7 +42,7 @@ app.get('/', function(req, res) {
 
  // Retrieve all data in MongoDB
  app.get('/all', function(req, res) {
- 	db.collections.find({}, function (err, found) {
+ 	db.scrapedData.find({}, function (err, found) {
  		res.send(found);
  	});
  });
@@ -76,10 +76,13 @@ app.get('/', function(req, res) {
 			url: url
 		})
 
-		db.scrapedData.insert({
+		db.scrapedData.update({
 			title: title,
 			url: url
-		}, function(err, saved) {
+		}, {
+			title: title,
+			url: url
+		}, {upsert:true}, function(err, saved) {
 		  	if (err) throw err;
 		  });
 
