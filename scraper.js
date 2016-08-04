@@ -24,6 +24,10 @@ var mongojs = require('mongojs');
 var databaseUrl = "scraper";
 var collections = ["scrapedData"];
 
+// Require Handlebars to display Scraped Data
+var exphbs = require('express-handlebars');
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+
 // Hook mongojs configuration to the db variable
 var db = mongojs(databaseUrl, collections);
 db.on('error', function(err) {
@@ -53,9 +57,44 @@ app.get('/', function(req, res) {
 // from the scrapedData collection as a json (this will be populated
 // by the data you scrape using the next route)
 
-// Scrapa data from website and store in MongoDB
- app.get('/scrape', function(req, res) {
- 	request("http://www.fark.com", function (error, response, html) {
+// find all comments
+app.get('/displayComments', function(req, res) {
+  db.books.find({"comment":1 }, function (err, found) {
+    if (err) throw err;
+    res.send(found);
+  });
+});
+
+// mark a book as having been read
+app.post('/newComment/:id', function(req, res) {
+  console.log(req.params.id);
+  var comment = req.body;
+  db.scrapedData.update({"_id": mongojs.ObjectId(req.params.id)}, {$set:{"comment": comment}}, function (err, done) {
+    if (err) throw err;
+    res.send(done);
+  })
+  // Remember: when searching by an id, the id needs to be passed in 
+  // as (mongojs.ObjectId(IDYOUWANTTOFIND))
+
+});
+
+
+// mark a book as having been read
+app.post('/deleteComment/:id', function(req, res) {
+  console.log(req.params.id);
+  var comment = req.body;
+  db.scrapedData.update({"_id": mongojs.ObjectId(req.params.id)}, {$unset:{"comment":1}}, function (err, done) {
+    if (err) throw err;
+    res.send(done);
+  })
+  // Remember: when searching by an id, the id needs to be passed in 
+  // as (mongojs.ObjectId(IDYOUWANTTOFIND))
+
+});
+
+// Scrape data from website and store in MongoDB
+function scrapeData() {
+	request("http://www.fark.com", function (error, response, html) {
 
 	// Load the html into cheerio and save it to a var.
   // '$' becomes a shorthand for cheerio's selector commands, 
@@ -65,16 +104,9 @@ app.get('/', function(req, res) {
   // an empty array to save the data that we'll scrape
   var result = [];
 
-  // Select each instance of the html body that you want to scrape.
-  // NOTE: Cheerio selectors function similarly to jQuery's selectors, 
-  // but be sure to visit the package's npm page to see how it works.
   $(".headline a").each(function(i, element){
   		var title = $(this).text();
   		var url = $(this).attr('href');
-  		result.push({
-			title: title,
-			url: url
-		})
 
 		db.scrapedData.update({
 			title: title,
@@ -86,14 +118,9 @@ app.get('/', function(req, res) {
 		  	if (err) throw err;
 		  });
 
-    // Scrape information from the web page, put it in an object 
-    // and add it to the result array. 
-
     });
-  		res.json(result);
 });
- });
-
+}
 // Route 2
 // =======
 // When you visit this route, the server will
@@ -110,3 +137,6 @@ app.get('/', function(req, res) {
 app.listen(3000, function() {
   console.log('App running on port 3000!');
 });
+
+scrapeData();
+
