@@ -17,7 +17,11 @@
   },
   "homepage": "https://github.com/jcruey/Mongo-Web-Scraper#readme",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "cheerio": "^0.20.0",
+    "express": "^4.14.0",
+    "express-handlebars": "^3.0.0",
+    "mongojs": "^2.4.0",
     "request": "^2.74.0"
   }
 }

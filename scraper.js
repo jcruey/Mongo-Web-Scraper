@@ -14,6 +14,7 @@
 // Initialize Express app
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser');
 
 // Require request and cheerio. This makes the scraping possible
 var request = require('request');
@@ -27,6 +28,8 @@ var collections = ["scrapedData"];
 // Require Handlebars to display Scraped Data
 var exphbs = require('express-handlebars');
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+
 
 // Hook mongojs configuration to the db variable
 var db = mongojs(databaseUrl, collections);
@@ -35,14 +38,15 @@ db.on('error', function(err) {
 });
 
 
-// Main route (simple Hello World Message)
+// Main route 
 app.get('/', function(req, res) {
-  res.send("Hello world");
+	db.scrapedData.find({}).limit(5, function (err, found) {
+ 		if(err) throw err;	
+  	res.render('index', {
+  		articles: found,	
+  	});
 });
-
-
-/* TODO: make two more routes
- * -/-/-/-/-/-/-/-/-/-/-/-/- */
+});
 
  // Retrieve all data in MongoDB
  app.get('/all', function(req, res) {
@@ -59,9 +63,11 @@ app.get('/', function(req, res) {
 
 // find all comments
 app.get('/displayComments', function(req, res) {
-  db.books.find({"comment":1 }, function (err, found) {
+  db.books.find({"comment":!null }, function (err, found) {
     if (err) throw err;
-    res.send(found);
+    res.render('index', {
+    	comment: found
+    });
   });
 });
 
@@ -83,7 +89,7 @@ app.post('/newComment/:id', function(req, res) {
 app.post('/deleteComment/:id', function(req, res) {
   console.log(req.params.id);
   var comment = req.body;
-  db.scrapedData.update({"_id": mongojs.ObjectId(req.params.id)}, {$unset:{"comment":1}}, function (err, done) {
+  db.scrapedData.update({"_id": mongojs.ObjectId(req.params.id)}, {$set:{"comment":null}}, function (err, done) {
     if (err) throw err;
     res.send(done);
   })
@@ -110,10 +116,12 @@ function scrapeData() {
 
 		db.scrapedData.update({
 			title: title,
-			url: url
+			url: url,
+			comment: null
 		}, {
 			title: title,
-			url: url
+			url: url,
+			comment: null
 		}, {upsert:true}, function(err, saved) {
 		  	if (err) throw err;
 		  });
