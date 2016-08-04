@@ -32,7 +32,7 @@ app.set('view engine', 'handlebars');
 
 
 // Hook mongojs configuration to the db variable
-var db = mongojs(mongodb://heroku_pr2dl1ld:hk0dd4reigsneufsq10826j4ml@ds145315.mlab.com:45315/heroku_pr2dl1ld);
+var db = mongojs('mongodb://heroku_pr2dl1ld:hk0dd4reigsneufsq10826j4ml@ds145315.mlab.com:45315/heroku_pr2dl1ld');
 db.on('error', function(err) {
   console.log('Database Error:', err);
 });
