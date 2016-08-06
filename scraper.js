@@ -32,7 +32,7 @@ app.set('view engine', 'handlebars');
 
 
 // Hook mongojs configuration to the db variable
-var db = mongojs(process.env.MONGODB_URI);
+var db = mongojs(process.env.MONGODB_URI, collections);
 db.on('error', function(err) {
   console.log('Database Error:', err);
 });
