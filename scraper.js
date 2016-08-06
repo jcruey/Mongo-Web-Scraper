@@ -22,7 +22,7 @@ var cheerio = require('cheerio');
 
 // Database configuration
 var mongojs = require('mongojs');
-var databaseUrl = "scraper";
+var databaseUrl = process.env.MONGODB_URI;
 var collections = ["scrapedData"];
 
 // Require Handlebars to display Scraped Data
@@ -32,7 +32,7 @@ app.set('view engine', 'handlebars');
 
 
 // Hook mongojs configuration to the db variable
-var db = mongojs(process.env.MONGODB_URI, collections);
+var db = mongojs(databaseUrl, collections);
 db.on('error', function(err) {
   console.log('Database Error:', err);
 });
